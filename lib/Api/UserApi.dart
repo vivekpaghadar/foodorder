@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:foodorder/Pref.dart';
+import 'package:foodorder/model/ProductResponse.dart';
 import 'package:foodorder/model/UserInfo.dart';
 import 'package:foodorder/network/dio_client.dart';
 import 'package:foodorder/network/dio_exception.dart';
@@ -53,9 +54,20 @@ class UserApi {
     }
   }
 
-  Future<Response> getUsersApi() async {
+  Future<ProductResponse?> getProduct() async {
     try {
-      final Response response = await dioClient.get(Endpoints.users);
+      final response = await getProductApi();
+      final user = ProductResponse.fromJson(response.data);
+      return user;
+    } on DioError catch (e) {
+      final errorMessage = DioExceptions.fromDioError(e).toString();
+      return null;
+    }
+  }
+
+  Future<Response> getProductApi() async {
+    try {
+      final Response response = await dioClient.get(Endpoints.product);
       return response;
     } catch (e) {
       rethrow;

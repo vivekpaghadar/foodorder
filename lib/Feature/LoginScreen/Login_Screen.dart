@@ -217,7 +217,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               if (_formKey.currentState!.validate()) {
                                 await userController.login("kminchelle", "0lelplR");
                                 if(userController.userInfo != null){
-                                  Get.to(const DashBoard());
+                                  Get.off(const DashBoard());
                                 }
                               }
                             },
