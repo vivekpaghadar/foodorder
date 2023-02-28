@@ -1,10 +1,14 @@
+import 'dart:io';
+
+import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
 
 class Endpoints {
   Endpoints._();
 
   // base url
-  static const String baseUrl = "https://dummyjson.com";
+  // static const String baseUrl = "https://dummyjson.com";
+  static const String baseUrl = "https://dktechnolab.com";
 
   // receiveTimeout
   static const int receiveTimeout = 15000;
@@ -12,8 +16,9 @@ class Endpoints {
   // connectTimeout
   static const int connectionTimeout = 15000;
 
-  static const String users = '/auth/login';
-  static const String product = '/products';
+  static const String login = '/food_corner/api/login.php';
+  static const String product = '/food_corner/api/Menu_View.php';
+  static const String addMenu = '/food_corner/api/Add_menu.php';
 }
 
 
@@ -35,6 +40,13 @@ class DioClient {
         responseHeader: true,
         responseBody: true,
       ));
+
+    (_dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
+        (HttpClient dioClient) {
+      dioClient.badCertificateCallback =
+      ((X509Certificate cert, String host, int port) => true);
+      return dioClient;
+    };
   }
   // Get:-----------------------------------------------------------------------
   Future<Response> get(

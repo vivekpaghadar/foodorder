@@ -87,7 +87,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           padding: const EdgeInsets.all(5.0),
                           child: TextFormField(
                             validator: (input) {
-                              if (input!.isValidEmail()) {
+                              if (/*input!.isValidEmail()*/true) {
                                 return null;
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
@@ -215,7 +215,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: TextButton(
                             onPressed: () async {
                               if (_formKey.currentState!.validate()) {
-                                await userController.login("kminchelle", "0lelplR");
+                                await userController.login(emailController.text.toString().trim(), passwordController.text.toString().trim());
                                 if(userController.userInfo != null){
                                   Get.off(const DashBoard());
                                 }

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:foodorder/Pref.dart';
 import 'package:foodorder/model/ProductResponse.dart';
@@ -5,17 +7,16 @@ import 'package:foodorder/model/UserInfo.dart';
 import 'package:foodorder/network/dio_client.dart';
 import 'package:foodorder/network/dio_exception.dart';
 
-
 class UserApi {
   final DioClient dioClient;
 
   UserApi({required this.dioClient});
 
-  Future<UserInfo?> login(email,password) async {
+  Future<UserInfo?> login(email, password) async {
     try {
       final response = await loginApi(email, password);
-      final user = UserInfo.fromJson(response!.data);
-      Pref.saveToken(user.token!);
+      final user = UserInfo.fromJson(json.decode(response!.data));
+      Pref.saveToken(user.user!.id!);
       return user;
     } on DioError catch (e) {
       final errorMessage = DioExceptions.fromDioError(e).toString();
@@ -26,15 +27,14 @@ class UserApi {
   Future<Response?> loginApi(String email, String password) async {
     try {
       final Response response = await dioClient.post(
-        Endpoints.users,
+        Endpoints.login,
         data: {
-          'username': email,
+          'email': email,
           'password': password,
         },
       );
       return response;
     } catch (e) {
-      return null;
       rethrow;
     }
   }
@@ -42,7 +42,7 @@ class UserApi {
   Future<Response> addUserApi(String name, String job) async {
     try {
       final Response response = await dioClient.post(
-        Endpoints.users,
+        Endpoints.login,
         data: {
           'name': name,
           'job': job,
@@ -54,14 +54,27 @@ class UserApi {
     }
   }
 
-  Future<ProductResponse?> getProduct() async {
+  Future<Response> addMenuApi(var param) async {
+    try {
+      final Response response = await dioClient.post(
+        Endpoints.addMenu,
+        data: param
+      );
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<List<ProductResponse?>> getProduct() async {
     try {
       final response = await getProductApi();
-      final user = ProductResponse.fromJson(response.data);
-      return user;
+      final responseBody = response.data as List;
+      final allPostList = responseBody.map((e) => ProductResponse.fromJson(e)).toList();
+      return allPostList;
     } on DioError catch (e) {
       final errorMessage = DioExceptions.fromDioError(e).toString();
-      return null;
+      return [];
     }
   }
 
@@ -74,24 +87,9 @@ class UserApi {
     }
   }
 
-  Future<Response> updateUserApi(int id, String name, String job) async {
-    try {
-      final Response response = await dioClient.put(
-        '${Endpoints.users}/$id',
-        data: {
-          'name': name,
-          'job': job,
-        },
-      );
-      return response;
-    } catch (e) {
-      rethrow;
-    }
-  }
-
   Future<void> deleteUserApi(int id) async {
     try {
-      await dioClient.delete('${Endpoints.users}/$id');
+      await dioClient.delete('${Endpoints.login}/$id');
     } catch (e) {
       rethrow;
     }

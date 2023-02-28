@@ -12,8 +12,7 @@ class UserController extends GetxController{
   var loading = false.obs;
   var productLoading = false.obs;
 
-  ProductResponse? productResponse;
-  List<Products> products = [];
+  List<ProductResponse?> productResponse = [];
 
   login(email,password) async {
     loading.value = true;
@@ -23,11 +22,8 @@ class UserController extends GetxController{
 
   getProduct() async {
     productLoading.value = true;
-    productResponse = await userApi.getProduct();
+    productResponse = (await userApi.getProduct());
     productLoading.value = false;
-    if(productResponse != null){
-      products = productResponse?.products ?? [];
-    }
   }
 
 
