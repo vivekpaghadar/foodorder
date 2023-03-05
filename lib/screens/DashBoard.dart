@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:foodorder/Pref.dart';
 import 'package:foodorder/constant/util.dart';
 import 'package:foodorder/controller/UserController.dart';
@@ -32,7 +33,6 @@ class _DashBoardState extends State<DashBoard> {
   getAllProduct() {
     userController.getProduct();
   }
-
 
 
   @override
@@ -170,11 +170,11 @@ class _DashBoardState extends State<DashBoard> {
                   elevation: 7,
                   shadowColor: Colors.black.withOpacity(0.7),
                   shape: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(125),
+                      borderRadius: BorderRadius.circular(20),
                       borderSide: const BorderSide(color: Colors.white)),
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(125.0),
-                    child: Image.network(productResponse.photo!,height: 250,width: 250,fit: BoxFit.cover)/*const Image(
+                    borderRadius: BorderRadius.circular(20.0),
+                    child: Image.network(productResponse.photo!,fit: BoxFit.cover)/*const Image(
                         image: AssetImage(pizza),
                         height: 250,
                         width: 250,
@@ -190,20 +190,29 @@ class _DashBoardState extends State<DashBoard> {
                       fontWeight: FontWeight.bold, fontSize: 20),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  '\$${productResponse.price ?? ''}',
-                  style: const TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 20),
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      '\$${productResponse.price ?? ''}',
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 20),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Image.asset(cart,height: 40,width: 40,),
+                  ),
+                ],
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(productResponse.description ?? '',
-                    style: const TextStyle(
-                        fontWeight: FontWeight.w200, fontSize: 20)),
-              ),
+              // Padding(
+              //   padding: const EdgeInsets.all(8.0),
+              //   child: Text(productResponse.description ?? '',
+              //       style: const TextStyle(
+              //           fontWeight: FontWeight.w200, fontSize: 20)),
+              // ),
             ],
           ),
         ),
@@ -240,6 +249,7 @@ class _DashBoardState extends State<DashBoard> {
                             child: InkWell(
                               onTap: () async {
                                 Get.back();
+                                Fluttertoast.showToast(msg: 'Coming soon');
                                 // Get.to(const UserList());
                               },
                               child: Card(
@@ -272,7 +282,7 @@ class _DashBoardState extends State<DashBoard> {
                             child: InkWell(
                               onTap: () async {
                                 Get.back();
-                                Get.to(const UserList());
+                                Get.to(UserList(onlyAdminList: false));
                               },
                               child: Card(
                                 elevation: 7,
@@ -283,6 +293,39 @@ class _DashBoardState extends State<DashBoard> {
                                     const BorderSide(color: Colors.white)),
                                 child: ListTile(
                                   title: const Text('View User'),
+                                  leading: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(Icons.privacy_tip, color: ColorRes.appColor),
+                                    ],
+                                  ),
+                                  minLeadingWidth: 10,
+                                ),
+                              ),
+                            ),
+                          ),
+                          onTap: () {
+                            //action on press
+                          },
+                        ),
+                        // admin userList
+                        ListTile(
+                          title: Padding(
+                            padding: const EdgeInsets.only(bottom: 3),
+                            child: InkWell(
+                              onTap: () async {
+                                Get.back();
+                                Get.to(UserList(onlyAdminList: true));
+                              },
+                              child: Card(
+                                elevation: 7,
+                                shadowColor: Colors.black.withOpacity(0.7),
+                                shape: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                    borderSide:
+                                    const BorderSide(color: Colors.white)),
+                                child: ListTile(
+                                  title: const Text('View Admin User'),
                                   leading: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [

@@ -37,9 +37,14 @@ class UserController extends GetxController{
     productLoading.value = false;
   }
 
-  getUserList() async {
+  getUserList(bool onlyAdminList) async {
     addProductLoading.value = true;
     userResponse = (await userApi.getUserList());
+    if(onlyAdminList){
+      userResponse.removeWhere((element) => element?.wpAdmin == "0");
+    }else{
+      userResponse.removeWhere((element) => element?.wpAdmin == "1");
+    }
     addProductLoading.value = false;
   }
 

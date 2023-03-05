@@ -176,11 +176,4 @@ class UserApi {
     }
   }
 
-  Future<void> deleteUserApi(int id) async {
-    try {
-      await dioClient.delete('${Endpoints.login}/$id');
-    } catch (e) {
-      rethrow;
-    }
-  }
 }

@@ -6,7 +6,8 @@ import 'package:get/get.dart';
 import 'package:get/instance_manager.dart';
 
 class UserList extends StatefulWidget {
-  const UserList({Key? key}) : super(key: key);
+  bool onlyAdminList;
+  UserList({Key? key,required this.onlyAdminList}) : super(key: key);
 
   @override
   State<UserList> createState() => _UserListState();
@@ -19,20 +20,20 @@ class _UserListState extends State<UserList> {
 
   @override
   void initState() {
-    // TODO: implement initState
     getAllProduct();
     super.initState();
   }
 
   getAllProduct() {
-    userController.getUserList();
+    userController.getUserList(widget.onlyAdminList);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('User View'),
+        title: Text(
+            widget.onlyAdminList ? 'User Admin View' : 'User View'),
       ),
       body: Obx(() => userController.addProductLoading.value
           ? const Center(child: CircularProgressIndicator())
@@ -99,7 +100,7 @@ class _UserListState extends State<UserList> {
                               onRefresh: () {
                                 return Future.delayed(
                                     const Duration(seconds: 1), () {
-                                  userController.getUserList();
+                                  userController.getUserList(widget.onlyAdminList);
                                 });
                               },
                               child: ListView.builder(
@@ -113,7 +114,7 @@ class _UserListState extends State<UserList> {
                               onRefresh: () {
                                 return Future.delayed(
                                     const Duration(seconds: 1), () {
-                                  userController.getUserList();
+                                  userController.getUserList(widget.onlyAdminList);
                                 });
                               },
                               child: ListView.builder(

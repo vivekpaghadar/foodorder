@@ -139,24 +139,26 @@ class _CategoryListState extends State<CategoryList> {
                 borderSide: const BorderSide(color: Colors.white)),
             child: ListTile(
               title: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Center(
-                    child: Card(
-                      elevation: 7,
-                      shadowColor: Colors.black.withOpacity(0.7),
-                      shape: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(125),
-                          borderSide: const BorderSide(color: Colors.white)),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(125.0),
-                        child: Image.network(category.photo!,height: 250,width: 250,fit: BoxFit.cover)/*const Image(
-                        image: AssetImage(pizza),
-                        height: 250,
-                        width: 250,
-                        fit: BoxFit.fill)*/,
-                      ),
-                    ),
-                  ),
+                  // Center(
+                  //   child: Card(
+                  //     elevation: 7,
+                  //     shadowColor: Colors.black.withOpacity(0.7),
+                  //     shape: OutlineInputBorder(
+                  //         borderRadius: BorderRadius.circular(125),
+                  //         borderSide: const BorderSide(color: Colors.white)),
+                  //     child: ClipRRect(
+                  //       borderRadius: BorderRadius.circular(125.0),
+                  //       child: Image.network(category.photo!,height: 250,width: 250,fit: BoxFit.cover)/*const Image(
+                  //       image: AssetImage(pizza),
+                  //       height: 250,
+                  //       width: 250,
+                  //       fit: BoxFit.fill)*/,
+                  //     ),
+                  //   ),
+                  // ),
                   Text(
                     category.categoryName!,
                     style: const TextStyle(fontWeight: FontWeight.w500),

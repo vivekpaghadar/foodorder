@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 const String pizza = 'asset/images/pizza.jpeg';
+const String google = 'asset/images/google.png';
+const String cart = 'asset/images/cart.png';
 
 
 class ColorRes {
