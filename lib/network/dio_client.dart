@@ -17,8 +17,13 @@ class Endpoints {
   static const int connectionTimeout = 15000;
 
   static const String login = '/food_corner/api/login.php';
+  static const String signUp = '/food_corner/api/add_user.php';
   static const String product = '/food_corner/api/Menu_View.php';
   static const String addMenu = '/food_corner/api/Add_menu.php';
+  static const String userList = '/food_corner/api/User_viwe.php';
+  static const String categoryList = '/food_corner/api/Category_View.php';
+
+
 }
 
 

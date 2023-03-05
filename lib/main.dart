@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:foodorder/Feature/LoginScreen/Login_Screen.dart';
+import 'package:foodorder/screens/Login_Screen.dart';
 import 'package:foodorder/Pref.dart';
 import 'package:foodorder/di/service_locator.dart';
 import 'package:foodorder/screens/DashBoard.dart';
@@ -32,10 +32,10 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  go(context){
-    if(Pref.getToken() != null){
+  go(context) {
+    if (Pref.getToken() != null) {
       return const DashBoard();
-    }else{
+    } else {
       return LoginScreen();
     }
   }

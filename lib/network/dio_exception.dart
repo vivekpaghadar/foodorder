@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class DioExceptions implements Exception {
   late String message;
@@ -18,6 +19,7 @@ class DioExceptions implements Exception {
         message = _handleError(
           dioError.response?.statusCode,
           dioError.response?.data,
+          dioError.response?.statusMessage
         );
         break;
       case DioErrorType.sendTimeout:
@@ -36,7 +38,8 @@ class DioExceptions implements Exception {
     }
   }
 
-  String _handleError(int? statusCode, dynamic error) {
+  String _handleError(int? statusCode, dynamic error,dynamic message) {
+    Fluttertoast.showToast(msg: message);
     switch (statusCode) {
       case 400:
         return 'Bad request';

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:foodorder/Feature/LoginScreen/Login_Screen.dart';
+import 'package:foodorder/screens/Login_Screen.dart';
 
 import '../../Core/Animation/Fade_Animation.dart';
 import '../../Core/Colors/Hex_Color.dart';

@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:foodorder/Feature/LoginScreen/Login_Screen.dart';
+import 'package:foodorder/screens/Login_Screen.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
 import '../../Core/Animation/Fade_Animation.dart';
