@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:foodorder/screens/Login_Screen.dart';
+import 'package:foodorder/screens/login_screen.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
 import '../../Core/Animation/Fade_Animation.dart';
@@ -14,6 +14,7 @@ class PinCodeVerificationScreen extends StatefulWidget {
     Key? key,
     this.phoneNumber,
   }) : super(key: key);
+
   @override
   State<PinCodeVerificationScreen> createState() =>
       _PinCodeVerificationScreenState();
@@ -21,6 +22,7 @@ class PinCodeVerificationScreen extends StatefulWidget {
 
 class _PinCodeVerificationScreenState extends State<PinCodeVerificationScreen> {
   TextEditingController textEditingController = TextEditingController();
+
   // ignore: close_sinks
   StreamController<ErrorAnimationType>? errorController;
 

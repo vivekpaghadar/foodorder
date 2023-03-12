@@ -4,8 +4,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:foodorder/constant/util.dart';
-import 'package:foodorder/controller/UserController.dart';
-import 'package:foodorder/model/MenuResponse.dart';
+import 'package:foodorder/controller/CategoryController.dart';
+import 'package:foodorder/model/RecipeResponse.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:get/instance_manager.dart';
 import 'package:get/route_manager.dart';
@@ -13,16 +13,16 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../Core/Animation/Fade_Animation.dart';
 
-class AddMenu extends StatefulWidget {
-  Menu? menu;
+class AddRecipe extends StatefulWidget {
+  Recipe? recipe;
 
-  AddMenu({super.key, this.menu});
+  AddRecipe({super.key, this.recipe});
 
   @override
-  State<AddMenu> createState() => _AddMenuState();
+  State<AddRecipe> createState() => _AddRecipeState();
 }
 
-class _AddMenuState extends State<AddMenu> {
+class _AddRecipeState extends State<AddRecipe> {
   Color enabled = const Color.fromARGB(255, 63, 56, 89);
   Color enabledtxt = Colors.white;
   Color deaible = Colors.grey;
@@ -30,37 +30,17 @@ class _AddMenuState extends State<AddMenu> {
   bool ispasswordev = true;
   final ImagePicker _picker = ImagePicker();
 
-  TextEditingController productController = TextEditingController();
-  TextEditingController priceController = TextEditingController();
-  TextEditingController quantityController = TextEditingController(text: '1');
+  TextEditingController recipeController = TextEditingController();
   TextEditingController descController = TextEditingController();
-  final oDateController = TextEditingController();
-  final dDateController = TextEditingController();
   String? imagePath;
-  UserController userController = Get.put(UserController());
+  CategoryController categoryController = Get.put(CategoryController());
 
   @override
   void initState() {
-    if (widget.menu == null) {
-      orderDate = DateTime.now().millisecondsSinceEpoch;
-      deliveryDate = DateTime.now().millisecondsSinceEpoch;
-      oDateController.text = dateFormat.format(DateTime.now());
-      dDateController.text = dateFormat.format(DateTime.now());
-    } else {
-      DateTime order = dateFormat.parse(widget.menu!.date!);
-      orderDate = order.millisecondsSinceEpoch;
-
-      DateTime deliver = dateFormat.parse(widget.menu!.expectedDate!);
-      deliveryDate = deliver.millisecondsSinceEpoch;
-
-      oDateController.text = widget.menu!.date!;
-      dDateController.text = widget.menu!.expectedDate!;
-
-      productController.text = widget.menu!.prodectName!;
-      priceController.text = widget.menu!.price!;
-      quantityController.text = widget.menu!.quantity!;
-      descController.text = widget.menu!.description!;
-    }
+    if (widget.recipe != null) {
+      recipeController.text = widget.recipe!.recipesName!;
+      descController.text = widget.recipe!.description!;
+    } else {}
 
     super.initState();
   }
@@ -68,8 +48,8 @@ class _AddMenuState extends State<AddMenu> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar:
-          AppBar(title: Text(widget.menu == null ? 'Add Menu' : 'Edit Menu')),
+      appBar: AppBar(
+          title: Text(widget.recipe == null ? 'Add Recipe' : 'Edit Recipe')),
       body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -91,9 +71,7 @@ class _AddMenuState extends State<AddMenu> {
                     FadeAnimation(
                       delay: 1,
                       child: Text(
-                        widget.menu == null
-                            ? "Add Menu Item"
-                            : 'Edit Menu Item',
+                        widget.recipe == null ? "Add Recipe" : 'Edit Recipe',
                         style: TextStyle(
                             color: Colors.black.withOpacity(0.9),
                             letterSpacing: 0.5),
@@ -105,9 +83,9 @@ class _AddMenuState extends State<AddMenu> {
                     TextFormField(
                       keyboardType: TextInputType.text,
                       obscureText: false,
-                      controller: productController,
+                      controller: recipeController,
                       decoration: InputDecoration(
-                          hintText: 'Product Name',
+                          hintText: 'Recipe Name',
                           fillColor: Colors.white,
                           filled: true,
                           prefixIcon: Icon(
@@ -128,59 +106,10 @@ class _AddMenuState extends State<AddMenu> {
                       height: 20,
                     ),
                     TextFormField(
-                      keyboardType: TextInputType.number,
-                      obscureText: false,
-                      controller: priceController,
-                      decoration: InputDecoration(
-                          hintText: 'Price',
-                          fillColor: Colors.white,
-                          filled: true,
-                          prefixIcon: Icon(
-                            Icons.attach_money,
-                            color: deaible,
-                            size: 20,
-                          ),
-                          errorBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: ColorRes.border)),
-                          enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: ColorRes.border)),
-                          border: OutlineInputBorder(
-                              borderSide: BorderSide(color: ColorRes.border)),
-                          focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: ColorRes.border))),
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    TextFormField(
-                      keyboardType: TextInputType.number,
-                      obscureText: false,
-                      controller: quantityController,
-                      decoration: InputDecoration(
-                          hintText: 'Quantity',
-                          fillColor: Colors.white,
-                          filled: true,
-                          prefixIcon: Icon(
-                            Icons.production_quantity_limits,
-                            color: deaible,
-                            size: 20,
-                          ),
-                          errorBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: ColorRes.border)),
-                          enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: ColorRes.border)),
-                          border: OutlineInputBorder(
-                              borderSide: BorderSide(color: ColorRes.border)),
-                          focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: ColorRes.border))),
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    TextFormField(
                       keyboardType: TextInputType.text,
                       obscureText: false,
                       controller: descController,
+                      maxLines: 6,
                       decoration: InputDecoration(
                           hintText: 'description',
                           fillColor: Colors.white,
@@ -215,128 +144,62 @@ class _AddMenuState extends State<AddMenu> {
                     const SizedBox(
                       height: 20,
                     ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () {
-                              showPickerDate(context);
-                            },
-                            child: TextFormField(
-                              enableInteractiveSelection: false,
-                              enabled: false,
-                              controller: oDateController,
-                              decoration: InputDecoration(
-                                labelText: 'Order Date',
-                                helperStyle:
-                                    const TextStyle(color: Colors.black),
-                                prefixIcon: const Icon(
-                                  Icons.access_time_rounded,
-                                  color: Colors.blue,
-                                ),
-                                border: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                        color: Colors.grey.withOpacity(0.7))),
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () {
-                              showDDatePickerDate(context);
-                            },
-                            child: TextFormField(
-                              enableInteractiveSelection: false,
-                              enabled: false,
-                              controller: dDateController,
-                              decoration: InputDecoration(
-                                labelText: 'Delivery Date',
-                                helperStyle:
-                                    const TextStyle(color: Colors.black),
-                                prefixIcon: const Icon(
-                                  Icons.access_time_rounded,
-                                  color: Colors.blue,
-                                ),
-                                border: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                        color: Colors.grey.withOpacity(0.7))),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
                     imageCard(),
                     const SizedBox(
                       height: 25,
                     ),
-                    Obx(() => userController.addProductLoading.value
+                    Obx(() => categoryController.loading.value
                         ? const CircularProgressIndicator()
                         : FadeAnimation(
                             delay: 1,
                             child: TextButton(
                                 onPressed: () async {
-                                  if (widget.menu == null) {
+                                  if (widget.recipe == null) {
                                     if (imagePath == null) {
                                       Fluttertoast.showToast(
                                           msg: 'image is required');
                                       return;
                                     }
-                                    var productName =
-                                        productController.text.toString();
-                                    int price = int.parse(
-                                        priceController.text.toString());
-                                    int quantity = int.parse(
-                                        quantityController.text.toString());
+                                    var recipeName =
+                                        recipeController.text.toString();
                                     var desc = descController.text.toString();
                                     var param = {
-                                      "prodect": productName,
-                                      "cat_menu": 13,
-                                      "price": price.toDouble(),
-                                      "date": oDateController.text.toString(),
-                                      "expected_date":
-                                          dDateController.text.toString(),
-                                      "quantity": quantity,
+                                      "Recipes": recipeName,
                                       "desc": desc,
                                       "status": 1,
-                                      "P_photo": await MultipartFile.fromFile(
+                                      "photo": await MultipartFile.fromFile(
                                           imagePath!),
                                     };
-                                    var result = await userController.addMenu(
-                                        param, false);
+                                    var result = await categoryController
+                                        .addRecipe(param, false);
                                     if (result) {
                                       Get.back(result: true);
                                     }
                                   } else {
-                                    var productName =
-                                        productController.text.toString();
-                                    int price = int.parse(
-                                        priceController.text.toString());
-                                    int quantity = int.parse(
-                                        quantityController.text.toString());
+                                    var recipeName =
+                                        recipeController.text.toString();
                                     var desc = descController.text.toString();
-                                    var param = {
-                                      "id": widget.menu!.id,
-                                      "prodect": productName,
-                                      "cat_menu": 13,
-                                      "price": price.toDouble(),
-                                      "date": oDateController.text.toString(),
-                                      "expected_date":
-                                          dDateController.text.toString(),
-                                      "quantity": quantity,
-                                      "desc": desc,
-                                      "status": 1,
-                                    };
-                                    if (imagePath != null) {
-                                      param.addAll({
-                                        "P_photo": await MultipartFile.fromFile(
-                                            imagePath!)
-                                      });
+                                    var param;
+                                    if (imagePath == null) {
+                                      param = {
+                                        "id": widget.recipe!.id,
+                                        "Recipes": recipeName,
+                                        "desc": desc,
+                                        "status": 1,
+                                      };
+                                    } else {
+                                      param = {
+                                        "id": widget.recipe!.id,
+                                        "Recipes": recipeName,
+                                        "desc": desc,
+                                        "status": 1,
+                                        "photo": await MultipartFile.fromFile(
+                                            imagePath!),
+                                      };
                                     }
-                                    var result = await userController.addMenu(
-                                        param, true);
+
+                                    var result = await categoryController
+                                        .addRecipe(param, true);
                                     if (result) {
                                       Get.back(result: true);
                                     }
@@ -350,7 +213,9 @@ class _AddMenuState extends State<AddMenu> {
                                         borderRadius:
                                             BorderRadius.circular(12.0))),
                                 child: Text(
-                                  widget.menu == null ? "Save" : 'Update',
+                                  widget.recipe == null
+                                      ? "Add Recipe"
+                                      : 'Edit Recipe',
                                   style: const TextStyle(
                                     color: Colors.white,
                                     letterSpacing: 0.5,
@@ -372,43 +237,6 @@ class _AddMenuState extends State<AddMenu> {
         ),
       ),
     );
-  }
-
-  int orderDate = 0;
-  int deliveryDate = 0;
-
-  showPickerDate(BuildContext context) async {
-    DateTime? pickedDate = await showDatePicker(
-        context: context,
-        initialDate: DateTime.fromMillisecondsSinceEpoch(orderDate),
-        //get today's date
-        firstDate: DateTime(2000),
-        //DateTime.now() - not to allow to choose before today.
-        lastDate: DateTime(2101));
-    if (pickedDate != null) {
-      orderDate = pickedDate.millisecondsSinceEpoch;
-      oDateController.text = dateFormat.format(
-          DateTime.fromMillisecondsSinceEpoch(
-              pickedDate.millisecondsSinceEpoch));
-      setState(() {});
-    }
-  }
-
-  showDDatePickerDate(BuildContext context) async {
-    DateTime? pickedDate = await showDatePicker(
-        context: context,
-        initialDate: DateTime.fromMillisecondsSinceEpoch(deliveryDate),
-        //get today's date
-        firstDate: DateTime(2000),
-        //DateTime.now() - not to allow to choose before today.
-        lastDate: DateTime(2101));
-    if (pickedDate != null) {
-      deliveryDate = pickedDate.millisecondsSinceEpoch;
-      dDateController.text = dateFormat.format(
-          DateTime.fromMillisecondsSinceEpoch(
-              pickedDate.millisecondsSinceEpoch));
-      setState(() {});
-    }
   }
 
   pickImageWidget() {

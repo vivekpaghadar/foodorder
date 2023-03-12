@@ -2,20 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:foodorder/constant/util.dart';
 import 'package:foodorder/controller/UserController.dart';
 import 'package:foodorder/extension/String_ext.dart';
-import 'package:foodorder/screens/Login_Screen.dart';
+import 'package:foodorder/model/UserResponse.dart';
 import 'package:get/get.dart';
 import 'package:get/instance_manager.dart';
 
 import '../Core/Animation/Fade_Animation.dart';
 
-enum FormData { name, phone, email, gender, password, confirmPassword }
+class AddUser extends StatefulWidget {
+  User? user;
 
-class SignupScreen extends StatefulWidget {
+  AddUser({super.key, this.user});
+
   @override
-  State<SignupScreen> createState() => _SignupScreenState();
+  State<AddUser> createState() => _AddUserState();
 }
 
-class _SignupScreenState extends State<SignupScreen> {
+class _AddUserState extends State<AddUser> {
   Color enabled = const Color.fromARGB(255, 63, 56, 89);
   Color enabledtxt = Colors.white;
   Color deaible = Colors.grey;
@@ -23,20 +25,30 @@ class _SignupScreenState extends State<SignupScreen> {
   bool isPassword = true;
   bool confirmIsPassword = true;
 
-  FormData? selected;
-
-  TextEditingController nameController = TextEditingController();
+  TextEditingController fnameController = TextEditingController();
+  TextEditingController lnameController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
   TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
-  TextEditingController confirmPasswordController = TextEditingController();
   TextEditingController addressController = TextEditingController(text: '');
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   UserController userController = Get.put(UserController());
 
   @override
+  void initState() {
+    if (widget.user != null) {
+      fnameController.text = widget.user!.name!;
+      lnameController.text = widget.user!.lname!;
+      phoneController.text = widget.user!.contact!;
+      emailController.text = widget.user!.email!;
+      // addressController.text = widget.user!.password!;
+    }
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(),
       body: Center(
         child: SingleChildScrollView(
           child: Form(
@@ -47,8 +59,8 @@ class _SignupScreenState extends State<SignupScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 0.0, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 0.0, vertical: 10),
                     child: Container(
                       padding: const EdgeInsets.all(40.0),
                       decoration: BoxDecoration(
@@ -60,7 +72,7 @@ class _SignupScreenState extends State<SignupScreen> {
                           FadeAnimation(
                             delay: 1,
                             child: Text(
-                              "Create new account",
+                              widget.user == null ? "Add User" : 'Update User',
                               style: TextStyle(
                                   color: Colors.black.withOpacity(0.9),
                                   fontSize: 26,
@@ -85,9 +97,45 @@ class _SignupScreenState extends State<SignupScreen> {
                           TextFormField(
                             keyboardType: TextInputType.text,
                             obscureText: false,
-                            controller: nameController,
+                            controller: fnameController,
                             decoration: InputDecoration(
-                                hintText: 'Username',
+                                hintText: 'First Name',
+                                fillColor: Colors.white,
+                                filled: true,
+                                prefixIcon: Icon(
+                                  Icons.text_fields,
+                                  color: deaible,
+                                  size: 20,
+                                ),
+                                errorBorder: OutlineInputBorder(
+                                    borderSide:
+                                        BorderSide(color: ColorRes.border)),
+                                enabledBorder: OutlineInputBorder(
+                                    borderSide:
+                                        BorderSide(color: ColorRes.border)),
+                                border: OutlineInputBorder(
+                                    borderSide:
+                                        BorderSide(color: ColorRes.border)),
+                                focusedBorder: OutlineInputBorder(
+                                    borderSide:
+                                        BorderSide(color: ColorRes.border))),
+                            validator: (value) {
+                              if (value!.isNotEmpty) {
+                                return null;
+                              } else {
+                                return 'can not be empty';
+                              }
+                            },
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          TextFormField(
+                            keyboardType: TextInputType.text,
+                            obscureText: false,
+                            controller: lnameController,
+                            decoration: InputDecoration(
+                                hintText: 'Last Name',
                                 fillColor: Colors.white,
                                 filled: true,
                                 prefixIcon: Icon(
@@ -219,129 +267,6 @@ class _SignupScreenState extends State<SignupScreen> {
                           const SizedBox(
                             height: 20,
                           ),
-                          TextFormField(
-                            keyboardType: TextInputType.text,
-                            controller: passwordController,
-                            decoration: InputDecoration(
-                                border: InputBorder.none,
-                                filled: true,
-                                fillColor: Colors.white,
-                                enabledBorder: OutlineInputBorder(
-                                    borderSide:
-                                        BorderSide(color: ColorRes.border)),
-                                focusedBorder: OutlineInputBorder(
-                                    borderSide:
-                                        BorderSide(color: ColorRes.border)),
-                                errorBorder: OutlineInputBorder(
-                                    borderSide:
-                                        BorderSide(color: ColorRes.border)),
-                                prefixIcon: Icon(
-                                  Icons.lock_open_outlined,
-                                  color: selected == FormData.password
-                                      ? enabledtxt
-                                      : deaible,
-                                  size: 20,
-                                ),
-                                suffixIcon: IconButton(
-                                  icon: isPassword
-                                      ? Icon(
-                                          Icons.visibility_off,
-                                          color: selected == FormData.password
-                                              ? enabledtxt
-                                              : deaible,
-                                          size: 20,
-                                        )
-                                      : Icon(
-                                          Icons.visibility,
-                                          color: selected == FormData.password
-                                              ? enabledtxt
-                                              : deaible,
-                                          size: 20,
-                                        ),
-                                  onPressed: () =>
-                                      setState(() => isPassword = !isPassword),
-                                ),
-                                hintText: 'Password',
-                                hintStyle: TextStyle(
-                                    color: selected == FormData.password
-                                        ? enabledtxt
-                                        : deaible,
-                                    fontSize: 16)),
-                            obscureText: isPassword,
-                            validator: (value) {
-                              if (value!.isNotEmpty) {
-                                return null;
-                              } else {
-                                return '* password is required';
-                              }
-                            },
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          TextFormField(
-                            keyboardType: TextInputType.text,
-                            controller: confirmPasswordController,
-                            decoration: InputDecoration(
-                                enabledBorder: OutlineInputBorder(
-                                    borderSide:
-                                        BorderSide(color: ColorRes.border)),
-                                focusedBorder: OutlineInputBorder(
-                                    borderSide:
-                                        BorderSide(color: ColorRes.border)),
-                                errorBorder: OutlineInputBorder(
-                                    borderSide:
-                                        BorderSide(color: ColorRes.border)),
-                                filled: true,
-                                fillColor: Colors.white,
-                                border: InputBorder.none,
-                                prefixIcon: Icon(
-                                  Icons.lock_open_outlined,
-                                  color: selected == FormData.password
-                                      ? enabledtxt
-                                      : deaible,
-                                  size: 20,
-                                ),
-                                suffixIcon: IconButton(
-                                  icon: confirmIsPassword
-                                      ? Icon(
-                                          Icons.visibility_off,
-                                          color: selected == FormData.password
-                                              ? enabledtxt
-                                              : deaible,
-                                          size: 20,
-                                        )
-                                      : Icon(
-                                          Icons.visibility,
-                                          color: selected == FormData.password
-                                              ? enabledtxt
-                                              : deaible,
-                                          size: 20,
-                                        ),
-                                  onPressed: () => setState(() =>
-                                      confirmIsPassword = !confirmIsPassword),
-                                ),
-                                hintText: 'Confirm Password',
-                                hintStyle: TextStyle(
-                                    color: selected == FormData.password
-                                        ? enabledtxt
-                                        : deaible,
-                                    fontSize: 16)),
-                            obscureText: confirmIsPassword,
-                            validator: (value) {
-                              if (value!.isEmpty) {
-                                return 'can not empty';
-                              }
-                              if (value !=
-                                  passwordController.text.toString().trim()) {
-                                return 'password not match';
-                              }
-                              return null;
-                            },
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
                           Obx(() => userController.signUpLoading.value
                               ? Center(
                                   child: CircularProgressIndicator(
@@ -356,46 +281,76 @@ class _SignupScreenState extends State<SignupScreen> {
                                           onPressed: () async {
                                             if (_formKey.currentState!
                                                 .validate()) {
-                                              var param = {
-                                                "username": nameController.text
-                                                    .toString()
-                                                    .trim(),
-                                                "email": emailController.text
-                                                    .toString()
-                                                    .trim(),
-                                                "password": passwordController
-                                                    .text
-                                                    .toString()
-                                                    .trim(),
-                                                "contact": phoneController.text
-                                                    .toString()
-                                                    .trim(),
-                                                "address": addressController.text
-                                                    .toString()
-                                                    .trim()
-                                              };
-                                              final value = await userController
-                                                  .signUp(param);
-                                              if (value) {
-                                                Get.back();
-                                                Navigator.of(context).push(
-                                                    MaterialPageRoute(
-                                                        builder: (context) {
-                                                  return LoginScreen();
-                                                }));
+                                              if (widget.user == null) {
+                                                var param = {
+                                                  "Name": fnameController.text
+                                                      .toString()
+                                                      .trim(),
+                                                  "lname": lnameController.text
+                                                      .toString()
+                                                      .trim(),
+                                                  "Email": emailController.text
+                                                      .toString()
+                                                      .trim(),
+                                                  "contact": phoneController
+                                                      .text
+                                                      .toString()
+                                                      .trim(),
+                                                  "address": addressController
+                                                      .text
+                                                      .toString()
+                                                      .trim()
+                                                };
+                                                final value =
+                                                    await userController.signUp(
+                                                        param, false);
+                                                if (value) {
+                                                  Get.back();
+                                                }
+                                              } else {
+                                                var param = {
+                                                  "id": widget.user!.id,
+                                                  "Name": fnameController.text
+                                                      .toString()
+                                                      .trim(),
+                                                  "lname": lnameController.text
+                                                      .toString()
+                                                      .trim(),
+                                                  "Email": emailController.text
+                                                      .toString()
+                                                      .trim(),
+                                                  "contact": phoneController
+                                                      .text
+                                                      .toString()
+                                                      .trim(),
+                                                  "address": addressController
+                                                      .text
+                                                      .toString()
+                                                      .trim()
+                                                };
+                                                final value =
+                                                    await userController.signUp(
+                                                        param, true);
+                                                if (value) {
+                                                  Get.back(result: true);
+                                                }
                                               }
                                             }
                                           },
                                           style: TextButton.styleFrom(
                                               backgroundColor: ColorRes.yellow,
-                                              padding: const EdgeInsets.symmetric(
-                                                  vertical: 18.0, horizontal: 80),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 18.0,
+                                                      horizontal: 80),
                                               shape: RoundedRectangleBorder(
                                                   borderRadius:
                                                       BorderRadius.circular(
                                                           12.0))),
                                           child: Text(
-                                            "Sign Up",
+                                            widget.user == null
+                                                ? "Save"
+                                                : 'Update',
                                             style: TextStyle(
                                               color: ColorRes.fontColor,
                                               letterSpacing: 0.5,
@@ -412,43 +367,6 @@ class _SignupScreenState extends State<SignupScreen> {
                   ),
                   //End of Center Card
                   //Start of outer card
-                  const SizedBox(
-                    height: 20,
-                  ),
-
-                  FadeAnimation(
-                    delay: 1,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text("If you have an account? ",
-                            style: TextStyle(
-                              color: ColorRes.fontColor,
-                              fontSize: 16,
-                              letterSpacing: 0.5,
-                            )),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.pop(context);
-                            Navigator.of(context)
-                                .push(MaterialPageRoute(builder: (context) {
-                              return LoginScreen();
-                            }));
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 10,bottom: 10,right: 10),
-                            child: Text("Sing in",
-                                style: TextStyle(
-                                    color: Colors.blue.withOpacity(0.9),
-                                    fontWeight: FontWeight.bold,
-                                    letterSpacing: 0.5,
-                                    fontSize: 16)),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
                   const SizedBox(
                     height: 20,
                   ),

@@ -1,7 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Pref {
-
   // Obtain shared preferences.
   static SharedPreferences? prefs;
 
@@ -11,16 +10,15 @@ class Pref {
     prefs = await SharedPreferences.getInstance();
   }
 
-  static saveToken(String accessToken){
+  static saveToken(String accessToken) {
     prefs?.setString(token, accessToken);
   }
 
-  static String? getToken(){
+  static String? getToken() {
     return prefs?.getString(token);
   }
 
-  static removeToken(){
+  static removeToken() {
     return prefs?.remove(token);
   }
-
 }

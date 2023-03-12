@@ -1,4 +1,4 @@
-import 'package:foodorder/model/User.dart';
+import 'package:foodorder/model/UserResponse.dart';
 
 class UserInfo {
   User? user;

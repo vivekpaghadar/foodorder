@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:foodorder/screens/Login_Screen.dart';
 import 'package:foodorder/Pref.dart';
 import 'package:foodorder/di/service_locator.dart';
-import 'package:foodorder/screens/DashBoard.dart';
+import 'package:foodorder/screens/dashboard.dart';
+import 'package:foodorder/screens/login_screen.dart';
 import 'package:get/get.dart';
 
 Future<void> main() async {

@@ -16,11 +16,8 @@ class DioExceptions implements Exception {
         message = "Receive timeout in connection with API server";
         break;
       case DioErrorType.response:
-        message = _handleError(
-          dioError.response?.statusCode,
-          dioError.response?.data,
-          dioError.response?.statusMessage
-        );
+        message = _handleError(dioError.response?.statusCode,
+            dioError.response?.data, dioError.response?.statusMessage);
         break;
       case DioErrorType.sendTimeout:
         message = "Send timeout in connection with API server";
@@ -38,7 +35,7 @@ class DioExceptions implements Exception {
     }
   }
 
-  String _handleError(int? statusCode, dynamic error,dynamic message) {
+  String _handleError(int? statusCode, dynamic error, dynamic message) {
     Fluttertoast.showToast(msg: message);
     switch (statusCode) {
       case 400:

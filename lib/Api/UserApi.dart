@@ -1,11 +1,14 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:foodorder/Pref.dart';
-import 'package:foodorder/model/Category.dart';
-import 'package:foodorder/model/ProductResponse.dart';
-import 'package:foodorder/model/User.dart';
+import 'package:foodorder/model/CategoryResponse.dart';
+import 'package:foodorder/model/CommonResponse.dart';
+import 'package:foodorder/model/MenuResponse.dart';
+import 'package:foodorder/model/RecipeResponse.dart';
 import 'package:foodorder/model/UserInfo.dart';
+import 'package:foodorder/model/UserResponse.dart';
 import 'package:foodorder/network/dio_client.dart';
 import 'package:foodorder/network/dio_exception.dart';
 
@@ -32,62 +35,69 @@ class UserApi {
   }
 
   Future<Response?> loginApi(String email, String password) async {
-
     FormData formData = FormData.fromMap({
       "email": email,
       "password": password,
     });
 
     try {
-      final Response response = await dioClient.post(
-        Endpoints.login,
-        data: formData
-      );
+      final Response response =
+          await dioClient.post(Endpoints.login, data: formData);
       return response;
     } catch (e) {
       rethrow;
     }
   }
 
-  Future<bool> signUp(var params) async {
+  Future<bool> signUp(var params, bool isEdit) async {
     try {
-      final response = await signUpApi(params);
-      if(response?.data['error'] == '000'){
-        return true;
+      final response = await signUpApi(params, isEdit);
+      if (isEdit) {
+        var data = json.decode(response!.data);
+        var success = data['Success'];
+        if (success) {
+          return true;
+        }
+        return false;
+      } else {
+        CommonResponse deleteResponse = CommonResponse.fromJson(response!.data);
+        Fluttertoast.showToast(msg: '${deleteResponse.data!.message}');
+        if (deleteResponse.success!) {
+          return true;
+        }
+        return false;
       }
-      return false;
     } on DioError catch (e) {
       final errorMessage = DioExceptions.fromDioError(e).toString();
       return false;
     }
   }
 
-  Future<Response?> signUpApi(var param) async {
-
+  Future<Response?> signUpApi(var param, bool isEdit) async {
     FormData formData = FormData.fromMap(param);
 
     try {
       final Response response = await dioClient.post(
-          Endpoints.signUp,
-          data: formData
-      );
+          isEdit ? Endpoints.updateUser : Endpoints.signUp,
+          data: formData);
       return response;
     } catch (e) {
       rethrow;
     }
   }
 
-
-  Future<List<ProductResponse?>> getProduct() async {
+  Future<MenuResponse?> getProduct() async {
     try {
       final response = await getProductApi();
-      final responseBody = json.decode(response.data) as List;
-      final allPostList =
-          responseBody.map((e) => ProductResponse.fromJson(e)).toList();
-      return allPostList;
+      final jsonResponse = json.decode(response.data);
+      MenuResponse menuResponse = MenuResponse.fromJson(jsonResponse);
+      if (menuResponse.success!) {
+        return menuResponse;
+      }
+      return null;
     } on DioError catch (e) {
       final errorMessage = DioExceptions.fromDioError(e).toString();
-      return [];
+      return null;
     }
   }
 
@@ -100,80 +110,303 @@ class UserApi {
     }
   }
 
-  Future<List<User?>> getUserList() async {
+  Future<UserResponse?> getUserList() async {
     try {
       final response = await getUserListApi();
-      final responseBody = response.data as List;
-      final allPostList =
-      responseBody.map((e) => User.fromJson(e)).toList();
-      return allPostList;
-    } on DioError catch (e) {
-      final errorMessage = DioExceptions.fromDioError(e).toString();
-      return [];
-    }
-  }
-
-  Future<Response> getUserListApi() async {
-    try {
-      final Response response = await dioClient.get(Endpoints.userList);
-      return response;
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-  Future<Response?> addProduct(
-      String name, double price, String desc, String imagePath) async {
-    try {
-      final response = await addMenuApi(name, price, desc, imagePath);
-      return response;
+      final responseBody = UserResponse.fromJson(response.data);
+      return responseBody;
     } on DioError catch (e) {
       final errorMessage = DioExceptions.fromDioError(e).toString();
       return null;
     }
   }
 
-  Future<Response> addMenuApi(
-      String name, double price, String desc, String imagePath) async {
-
-    FormData formData = FormData.fromMap({
-      "prodect": name,
-      "cat_menu" : 13,
-      "price": price,
-      "desc": desc,
-      "status": 1,
-      "P_photo": await MultipartFile.fromFile(imagePath),
-    });
-
+  Future<Response> getUserListApi() async {
     try {
-      final Response response =
-          await dioClient.post(Endpoints.addMenu, data: formData);
+      final Response response = await dioClient.post(Endpoints.userList);
       return response;
     } catch (e) {
       rethrow;
     }
   }
 
-  Future<List<Category?>> getCategoryList() async {
+  Future<bool> addMenu(var param, bool isEdit) async {
     try {
-      final response = await getCategoryListApi();
-      final responseBody = json.decode(response.data) as List;
-      final allPostList =
-      responseBody.map((e) => Category.fromJson(e)).toList();
-      return allPostList;
+      final response = await addMenuApi(param, isEdit);
+      if (isEdit) {
+        CommonResponse deleteResponse =
+            CommonResponse.fromJson(json.decode(response.data));
+        Fluttertoast.showToast(msg: '${deleteResponse.data!.message}');
+        if (deleteResponse.success!) {
+          return true;
+        }
+        return false;
+      } else {
+        CommonResponse deleteResponse = CommonResponse.fromJson(response.data);
+        Fluttertoast.showToast(msg: '${deleteResponse.data!.message}');
+        if (deleteResponse.success!) {
+          return true;
+        }
+        return false;
+      }
     } on DioError catch (e) {
       final errorMessage = DioExceptions.fromDioError(e).toString();
-      return [];
+      return false;
+    }
+  }
+
+  Future<Response> addMenuApi(var param, bool isEdit) async {
+    FormData formData = FormData.fromMap(param);
+    try {
+      final Response response = await dioClient.post(
+          isEdit ? Endpoints.updateMenu : Endpoints.addMenu,
+          data: formData);
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // add category
+  Future<bool> addCategory(var param, bool isEdit) async {
+    try {
+      final response = await addCategoryApi(param, isEdit);
+      if (isEdit) {
+        var data = json.decode(response.data);
+        var success = data['Success'];
+        if (success) {
+          return true;
+        }
+        return false;
+      } else {
+        CommonResponse deleteResponse = CommonResponse.fromJson(response.data);
+        Fluttertoast.showToast(msg: '${deleteResponse.data!.message}');
+        if (deleteResponse.success!) {
+          return true;
+        }
+        return false;
+      }
+    } on DioError catch (e) {
+      final errorMessage = DioExceptions.fromDioError(e).toString();
+      return false;
+    }
+  }
+
+  Future<Response> addCategoryApi(var param, bool isEdit) async {
+    FormData formData = FormData.fromMap(param);
+    try {
+      final Response response = await dioClient.post(
+          isEdit ? Endpoints.updateCategory : Endpoints.addCategory,
+          data: formData);
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  //add recipe
+  Future<bool> addRecipe(var param, bool isEdit) async {
+    try {
+      final response = await addRecipeApi(param, isEdit);
+      if (isEdit) {
+        var data = json.decode(response.data);
+        if (data['Success']) {
+          return true;
+        }
+      } else {
+        CommonResponse commonResponse = CommonResponse.fromJson(response.data);
+        Fluttertoast.showToast(msg: '${commonResponse.data!.message}');
+        if (commonResponse.success!) {
+          return true;
+        }
+      }
+
+      return false;
+    } on DioError catch (e) {
+      final errorMessage = DioExceptions.fromDioError(e).toString();
+      return false;
+    }
+  }
+
+  Future<Response> addRecipeApi(var param, bool isEdit) async {
+    FormData formData = FormData.fromMap(param);
+    try {
+      final Response response = await dioClient.post(
+          isEdit ? Endpoints.updateRecipe : Endpoints.addRecipe,
+          data: formData);
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<CategoryResponse?> getCategoryList() async {
+    try {
+      final response = await getCategoryListApi();
+      CategoryResponse categoryResponse =
+          CategoryResponse.fromJson(json.decode(response.data));
+      if (categoryResponse.success!) {
+        return categoryResponse;
+      }
+      return null;
+    } on DioError catch (e) {
+      final errorMessage = DioExceptions.fromDioError(e).toString();
+      return null;
     }
   }
 
   Future<Response> getCategoryListApi() async {
     try {
-      final Response response = await dioClient.get(Endpoints.categoryList);
+      final Response response = await dioClient.post(Endpoints.categoryList);
       return response;
     } catch (e) {
       rethrow;
     }
   }
 
+  // recipe list
+  Future<RecipeResponse?> getRecipeList() async {
+    try {
+      final response = await getRecipeListApi();
+      RecipeResponse recipeResponse =
+          RecipeResponse.fromJson(json.decode(response.data));
+      if (recipeResponse.success!) {
+        return recipeResponse;
+      }
+      return null;
+    } on DioError catch (e) {
+      final errorMessage = DioExceptions.fromDioError(e).toString();
+      return null;
+    }
+  }
+
+  Future<Response> getRecipeListApi() async {
+    try {
+      final Response response = await dioClient.post(Endpoints.recipeList);
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // delete user
+
+  Future<bool> deleteUser(int params) async {
+    try {
+      final response = await deleteUserApi(params);
+      CommonResponse deleteResponse = CommonResponse.fromJson(response!.data);
+      Fluttertoast.showToast(msg: '${deleteResponse.data!.message}');
+      if (deleteResponse.success!) {
+        return true;
+      }
+      return false;
+    } on DioError catch (e) {
+      final errorMessage = DioExceptions.fromDioError(e).toString();
+      return false;
+    }
+  }
+
+  Future<Response?> deleteUserApi(int userID) async {
+    var param = {"user_id": userID};
+
+    FormData formData = FormData.fromMap(param);
+
+    try {
+      final Response response =
+          await dioClient.post(Endpoints.deleteUser, data: formData);
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // delete category
+  Future<bool> deleteCategory(int catID) async {
+    try {
+      final response = await deleteCategoryApi(catID);
+      CommonResponse deleteResponse = CommonResponse.fromJson(response!.data);
+      Fluttertoast.showToast(msg: '${deleteResponse.data!.message}');
+      if (deleteResponse.success!) {
+        return true;
+      }
+      return false;
+    } on DioError catch (e) {
+      final errorMessage = DioExceptions.fromDioError(e).toString();
+      return false;
+    }
+  }
+
+  Future<Response?> deleteCategoryApi(int catID) async {
+    var param = {"cat_id": catID};
+
+    FormData formData = FormData.fromMap(param);
+
+    try {
+      final Response response =
+          await dioClient.post(Endpoints.deleteCategory, data: formData);
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // delete recipe
+  Future<bool> deleteRecipe(int catID) async {
+    try {
+      final response = await deleteRecipeApi(catID);
+      CommonResponse commonResponse = CommonResponse.fromJson(response!.data);
+      Fluttertoast.showToast(msg: '${commonResponse.data!.message}');
+      if (commonResponse.success!) {
+        return true;
+      }
+      return false;
+    } on DioError catch (e) {
+      final errorMessage = DioExceptions.fromDioError(e).toString();
+      return false;
+    }
+  }
+
+  Future<Response?> deleteRecipeApi(int catID) async {
+    var param = {"recipes_id": catID};
+
+    FormData formData = FormData.fromMap(param);
+
+    try {
+      final Response response =
+          await dioClient.post(Endpoints.deleteRecipe, data: formData);
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // delete menu
+  Future<bool> deleteMenu(int menuID) async {
+    try {
+      final response = await deleteMenuApi(menuID);
+      CommonResponse commonResponse = CommonResponse.fromJson(response!.data);
+      Fluttertoast.showToast(msg: '${commonResponse.data!.message}');
+      if (commonResponse.success!) {
+        return true;
+      }
+      return false;
+    } on DioError catch (e) {
+      final errorMessage = DioExceptions.fromDioError(e).toString();
+      return false;
+    }
+  }
+
+  Future<Response?> deleteMenuApi(int menuID) async {
+    var param = {"menu_id": menuID};
+
+    FormData formData = FormData.fromMap(param);
+
+    try {
+      final Response response =
+          await dioClient.post(Endpoints.deleteMenu, data: formData);
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

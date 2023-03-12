@@ -3,12 +3,12 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:foodorder/constant/util.dart';
 import 'package:foodorder/controller/UserController.dart';
 import 'package:foodorder/extension/String_ext.dart';
-import 'package:foodorder/screens/DashBoard.dart';
+import 'package:foodorder/screens/dashboard.dart';
 import 'package:get/get.dart';
 import 'package:get/instance_manager.dart';
 
 import '../Core/Animation/Fade_Animation.dart';
-import 'SignUp_Screen.dart';
+import 'signup_screen.dart';
 
 enum FormData {
   email,
@@ -139,11 +139,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                 size: 20,
                               ),
                               enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: ColorRes.border)),
+                                  borderSide:
+                                      BorderSide(color: ColorRes.border)),
                               focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: ColorRes.border)),
+                                  borderSide:
+                                      BorderSide(color: ColorRes.border)),
                               errorBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: ColorRes.border)),
+                                  borderSide:
+                                      BorderSide(color: ColorRes.border)),
                               suffixIcon: IconButton(
                                 icon: confirmIsPassword
                                     ? Icon(
@@ -160,11 +163,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                             : deaible,
                                         size: 20,
                                       ),
-                                onPressed: () => setState(
-                                    () => confirmIsPassword = !confirmIsPassword),
+                                onPressed: () => setState(() =>
+                                    confirmIsPassword = !confirmIsPassword),
                               ),
                               border: OutlineInputBorder(
-                                  borderSide: BorderSide(color: ColorRes.border)),
+                                  borderSide:
+                                      BorderSide(color: ColorRes.border)),
                             ),
                             validator: (value) {
                               if (value!.isNotEmpty) {
@@ -182,11 +186,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                   color: ColorRes.yellow,
                                 )
                               : Column(
-                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
                                   children: [
                                     TextButton(
                                         onPressed: () async {
-                                          if (_formKey.currentState!.validate()) {
+                                          if (_formKey.currentState!
+                                              .validate()) {
                                             await userController.login(
                                                 emailController.text
                                                     .toString()
@@ -194,7 +200,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                                 passwordController.text
                                                     .toString()
                                                     .trim());
-                                            if (userController.userInfo != null) {
+                                            if (userController.userInfo !=
+                                                null) {
                                               Get.off(const DashBoard());
                                             }
                                           }
@@ -205,7 +212,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                                 vertical: 18.0, horizontal: 20),
                                             shape: RoundedRectangleBorder(
                                                 borderRadius:
-                                                    BorderRadius.circular(12.0))),
+                                                    BorderRadius.circular(
+                                                        12.0))),
                                         child: Text(
                                           "Login",
                                           style: TextStyle(
@@ -225,7 +233,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             children: [
                               TextButton(
                                   onPressed: () async {
-                                    Fluttertoast.showToast(msg: 'work in progress');
+                                    Fluttertoast.showToast(
+                                        msg: 'work in progress');
                                   },
                                   style: TextButton.styleFrom(
                                       backgroundColor: Colors.white,
@@ -269,9 +278,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                   Text("Don't have an account? ",
+                  Text("Don't have an account? ",
                       style: TextStyle(
-                          color: ColorRes.fontColor, letterSpacing: 0.5, fontSize: 16)),
+                          color: ColorRes.fontColor,
+                          letterSpacing: 0.5,
+                          fontSize: 16)),
                   GestureDetector(
                     onTap: () {
                       Navigator.pop(context);
@@ -281,7 +292,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       }));
                     },
                     child: Padding(
-                      padding: const EdgeInsets.only(top: 10,bottom: 10,right: 10),
+                      padding:
+                          const EdgeInsets.only(top: 10, bottom: 10, right: 10),
                       child: Text("Sign up",
                           style: TextStyle(
                               color: Colors.blue.withOpacity(0.9),
